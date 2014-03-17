@@ -1,5 +1,5 @@
 (ns the-joy-of-clojure.core-test
-  (:use clojure.test the-joy-of-clojure.core))
+  (:use clojure.test the-joy-of-clojure.core [clojure.set :only [intersection union difference]]))
 
 (deftest test-do-blowfish
   (is (= (do-blowfish :blowfish) "not sure what to do"))
@@ -76,6 +76,9 @@
     (is (= (vec (conj q :go-out)) [:wake-up :shower :brush-teeth :go-out]))))
 
 (deftest test-set-operations
-  (let [s #{:a :b :c :d}]
+  (let [s #{:a :b :c :d}
+        s1 #{:humans :fruits :zombies}
+        s2 #{:chupaa :humans :zombies}]
     (is (= (s :a) :a))
-    (is (= (s :e) nil))))
+    (is (= (s :e) nil))
+    (is (= ((intersection s1 s2) #{:humans :zombies})))))
