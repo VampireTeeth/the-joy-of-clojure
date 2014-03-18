@@ -81,4 +81,54 @@
         s2 #{:chupaa :humans :zombies}]
     (is (= (s :a) :a))
     (is (= (s :e) nil))
-    (is (= ((intersection s1 s2) #{:humans :zombies})))))
+    (is (= (intersection s1 s2) #{:humans :zombies}))
+    (is (= (union s1 s2) #{:humans :fruits :zombies :chupaa}))
+    (is (= (difference s1 s2) #{:fruits}))
+    (is (= (difference s2 s1) #{:chupaa}))))
+
+(deftest test-hash-map-operations
+  (let [m1 (hash-map :a 1 :b 2 :c 3)
+        m2 (into {} [[:a 1] [:b 2]])
+        m3 (into {} '([:a 1] [:b 2]))
+        m4 (into {} (map vec '[(:a 1) (:b 2)]))
+        m5 (zipmap [:a :b] [1 2])]
+    (is (= m1 {:a 1 :b 2 :c 3}))
+    (is (= m2 {:a 1 :b 2}))
+    (is (= m3 {:a 1 :b 2}))
+    (is (= m4 {:a 1 :b 2}))
+    (is (= m5 {:a 1 :b 2}))))
+
+(deftest test-sorted-map
+  (let [m1 (sorted-map "abc" 1 "bca" 2)
+        m2 (sorted-map-by #(compare (subs %1 1) (subs %2 1)) "abc" 1 "bac" 2)
+        m3 (assoc (hash-map 1 :int) 1.0 :float)
+        m4 (assoc (sorted-map 1 :int) 1.0 :float)
+        m5 (array-map :a 1 :b 2 :c 3)]
+    (println m1)
+    (is (= m1 {"abc" 1 "bca" 2}))
+    (is (= m2 {"bac" 2 "abc" 1}))
+    (is (= m3 {1 :int 1.0 :float}))
+    (is (= m4 {1 :float}))
+    (is (= (seq m5) '([:a 1] [:b 2] [:c 3])))))
+
+(deftest test-pos
+  (let [m1 (hash-map :a 1 :b 2 :c 3)
+        v1 [:a 1 :b 2 :c 3]]
+    (is (= (pos 3 m1) :c))
+    (is (= (pos 2 v1) 3))
+    (is (= nil (pos 3 {})))
+    (is (= nil (pos 3 {:a 1 :b 2 :c 4})))
+    (is (= nil (pos 3 [1 2 4 6])))))
+
+(deftest test-index
+  (let [m1 (sorted-map :a 1 :b 2 :c 3)
+        v1 [:a 1 :b 2]
+        s1 #{:a :b}]
+    (is (= (index m1) '([:a 1] [:b 2] [:c 3])))
+    (is (= (index v1) '([0 :a] [1 1] [2 :b] [3 2])))
+    (is (= (index s1) '([:a :a] [:b :b])))))
+
+(deftest test-ppos
+  (let [m1 (sorted-map :a 1 :b 2 :c 3)]
+    (println (ppos #{2 3} m1))
+    (is (= (ppos #{2 3} m1) '(:b :c)))))

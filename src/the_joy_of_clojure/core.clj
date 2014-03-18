@@ -28,5 +28,25 @@
       res
       (recur (next coll) (conj res (f (first coll)))))))
 
+(defn pos [e coll]
+  (let [cmp (if (map? coll)
+                #(= (second %1) %2)
+                #(= %1 %2))]
+    (loop [p 0 s (seq coll)]
+      (if (empty? s)
+        nil
+        (if (cmp (first s) e)
+          (if (map? coll) (first (first s)) p)
+          (recur (inc p) (next s)))))))
+
+(defn index [coll]
+  (cond
+   (map? coll) (seq coll)
+   (set? coll) (map vector coll coll)
+   :else (map vector (iterate inc 0) coll)))
+
+(defn ppos [pred coll]
+  (for [[i v] (index coll) :when (pred v)] i))
+
 (defn -main [& args]
   (println "Hello, world!"))
