@@ -132,3 +132,35 @@
   (let [m1 (sorted-map :a 1 :b 2 :c 3)]
     (println (ppos #{2 3} m1))
     (is (= (ppos #{2 3} m1) '(:b :c)))))
+
+(deftest test-persistentness
+  (let [base '(:barnabas :adam)
+        ls1 (cons :willie base)
+        ls2 (cons :pheonix base)]
+    (is (identical? (next ls1) (next ls2)))))
+
+(deftest test-xconj
+  (let [t (xconj nil 5)
+        t1 (xconj t 4)
+        t2 (xconj t1 6)]
+    (is (= (:val t) 5))
+    (is (= (:L t) nil))
+    (is (= (:R t) nil))
+    (is (= (:val (:L t1)) 4))
+    (is (identical? (:val (:L t1)) (:val (:L t2))))))
+
+(deftest test-and-chain
+  (let [f #(+ %1 %2 %3)
+        r (and-chain 1 2 3 f 1 2 3)]
+    (is (= r 6))))
+
+(deftest test-rest-next-chain
+  (let [lr (rest-chain 1)
+        ln (next-chain 1)]
+    (println (first lr))
+    (println (first ln))))
+
+(deftest test-lz-rec-steps
+  (let [lz-s (lz-rec-steps [1 2 3 4])]
+    (println (class lz-s))
+    (is (= lz-s '(1 (2 (3 (4 ()))))))))

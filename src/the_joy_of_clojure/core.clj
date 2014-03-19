@@ -48,5 +48,27 @@
 (defn ppos [pred coll]
   (for [[i v] (index coll) :when (pred v)] i))
 
+(defn xconj [t v]
+  (cond
+   (nil? t) {:val v :L nil :R nil}
+   (< v (:val t)) (assoc t :L (xconj (:L t) v))
+   :else (assoc t :R (xconj (:R t) v))))
+
+(defn and-chain [x y z func & args]
+  (and x y z (apply func args)))
+
+(defn rest-chain [v]
+  (-> (iterate #(do (print \.) (inc %)) v) rest rest rest))
+
+(defn next-chain [v]
+  (-> (iterate #(do (print \.) (inc %)) v) next next next))
+
+(defn lz-rec-steps [s]
+  (lazy-seq
+   (if (seq s)
+     [(first s) (lz-rec-steps (rest s))]
+     [])))
+
+
 (defn -main [& args]
   (println "Hello, world!"))
