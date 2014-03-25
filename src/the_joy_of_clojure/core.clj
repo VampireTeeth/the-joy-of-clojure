@@ -1,4 +1,5 @@
 (ns the-joy-of-clojure.core
+  (:import (java.util.concurrent.atomic AtomicInteger))
   (:gen-class))
 
 (defn change-vec [vec old-val new-val]
@@ -68,6 +69,49 @@
    (if (seq s)
      [(first s) (lz-rec-steps (rest s))]
      [])))
+
+(defn fnth [n]
+  (apply comp (cons first (take (dec n) (repeat rest)))))
+
+(defn make-keywords [l]
+  (map (comp keyword #(.toLowerCase %) name) l))
+
+(defn sorted-by-plays-loved-ratio [m]
+  ((partial sort-by #(/ (:plays %) (:loved %))) m))
+
+(defn apply-keys [f ks m]
+  (let [only (select-keys m ks)]
+    (zipmap (keys only) (map f (vals only)))))
+
+(defn manip-map [f ks m]
+  (conj m (apply-keys f ks m)))
+
+(defn slope [& {:keys [p1 p2] :or {p1 [0 0] p2 [1 1]}}]
+  {:pre [(not (= p1 p2)) (vector? p1) (vector? p2)]
+   :post [(or (float? %) (ratio? %))]}
+  (/ (- (p2 1) (p1 1)) (- (p2 0) (p1 0))))
+
+(def add-and-get
+  (let [ai (AtomicInteger. 0)]
+    (fn [y] (.addAndGet ai y))))
+
+(defmacro do-until [& clauses]
+  (when clauses
+    (list `when (first clauses)
+          (if (next clauses)
+            (second clauses)
+            (throw (IllegalArgumentException.
+                    "do-until requires an even number of forms")))
+          (cons 'do-until (nnext clauses)))))
+
+(defmacro unless [pred & body]
+  `(if (not ~pred)
+     (do ~@body)))
+
+(defn from-end [s n]
+  (let [delta (dec (- (count s) n))]
+    (unless (neg? delta)
+            (nth s delta))))
 
 
 (defn -main [& args]

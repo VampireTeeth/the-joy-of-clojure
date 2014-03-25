@@ -164,3 +164,38 @@
   (let [lz-s (lz-rec-steps [1 2 3 4])]
     (println (class lz-s))
     (is (= lz-s '(1 (2 (3 (4 ()))))))))
+
+(deftest test-fnth
+  (is (= ((fnth 5) '[a b c d e]) 'e)))
+
+(deftest test-make-keywords
+  (is (= (make-keywords '[a B C]) '(:a :b :c))))
+
+(def plays [{:band "Burial" :plays 979 :loved 10}
+               {:band "Eno" :plays 2333 :loved 15}
+               {:band "Bill Evans" :plays 979 :loved 9}
+               {:band "Magma" :plays 1021 :loved 20}])
+
+(deftest test-sorted-by-plays-loved-ratio
+  (let [sorted-plays (sorted-by-plays-loved-ratio plays)]
+    (println sorted-plays)))
+
+(deftest test-manip-map
+  (is (= (:band (manip-map #(.toUpperCase %) [:band] (plays 0)))
+         "BURIAL")))
+
+(deftest test-slope
+  (println "Slope is" (slope :p1 [1 3] :p2 [5 6])))
+
+(deftest test-add-and-get
+  (is (= (add-and-get 2) 2))
+  (is (= (add-and-get 2) 4))
+  (is (= (add-and-get 7) 11)))
+
+(deftest test-unless
+  (is (= (unless (even? 3) 3) 3))
+  (is (= (unless (even? 2) 2) nil)))
+
+(deftest test-from-end
+  (is (= (from-end (range 1 11) 0) 10))
+  (is (= (from-end (range 1 11) 1) 9)))
